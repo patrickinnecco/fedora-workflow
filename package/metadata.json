@@ -1,0 +1,14 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Category": "Windows and Tasks",
+        "Description": "A narrow panel button that toggles KWin Show Desktop",
+        "Description[pt_BR]": "Botão estreito no painel que alterna a exibição da área de trabalho pelo KWin",
+        "Icon": "user-desktop",
+        "Id": "com.scadutree.showdesktop",
+        "License": "MIT",
+        "Name": "Scadutree Show Desktop",
+        "Version": "1.1.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}
