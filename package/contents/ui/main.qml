@@ -21,16 +21,6 @@ PlasmoidItem {
     Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground
 
     Rectangle {
-        anchors.fill: parent
-        color: Kirigami.Theme.highlightColor
-        opacity: pointer.containsMouse ? (pointer.pressed ? 0.24 : 0.12) : 0
-
-        Behavior on opacity {
-            NumberAnimation { duration: 120 }
-        }
-    }
-
-    Rectangle {
         width: 1
         // Plasma can draw in the right margin but cannot route clicks there.
         // Keep pointer inside the applet, to the left of this divider.
