@@ -39,13 +39,24 @@ PlasmoidItem {
     readonly property rect screenGeometry: panelScreen
         ? Qt.rect(panelScreen.virtualX, panelScreen.virtualY,
             panelScreen.width, panelScreen.height) : Qt.rect(0, 0, 0, 0)
-    readonly property point hitScenePosition: root.mapToItem(null, divider.x + divider.width, divider.y)
+    // Visible panel background, in panel window coordinates (bottom panel).
+    readonly property real panelBackgroundTop: panelRoot
+        ? panelRoot.fixedTopFloatingPadding + panelRoot.fixedBottomFloatingPadding * (1 - floatingProgress)
+        : root.Kirigami.ScenePosition.y + divider.y
+    readonly property real panelBackgroundHeight: panelRoot
+        ? panelRoot.height - panelRoot.fixedTopFloatingPadding - panelRoot.fixedBottomFloatingPadding : divider.height
+    readonly property real panelBackgroundRight: panelRoot
+        ? panelRoot.width - panelRoot.rightFloatingPadding : root.Kirigami.ScenePosition.x + root.width + panelPadding
+    // The clickable section starts after the separator and ends at the panel's right edge.
+    readonly property real hitLeft: root.Kirigami.ScenePosition.x + divider.x + divider.width
+    readonly property int hitWidth: Math.max(1, Math.round(panelBackgroundRight - hitLeft))
+    readonly property int hitHeight: Math.max(1, Math.round(panelBackgroundHeight))
     readonly property int hitRightMargin: panelWindow
         ? Math.max(0, Math.round(screenGeometry.x + screenGeometry.width
-            - panelWindow.x - hitScenePosition.x - 8)) : 0
+            - panelWindow.x - panelBackgroundRight)) : 0
     readonly property int hitBottomMargin: panelWindow
         ? Math.max(0, Math.round(screenGeometry.y + screenGeometry.height
-            - panelWindow.y - hitScenePosition.y - divider.height)) : 0
+            - panelWindow.y - panelBackgroundTop - panelBackgroundHeight)) : 0
 
     // A fixed logical width keeps the button narrow even on a tall panel.
     implicitWidth: 8
@@ -68,10 +79,11 @@ PlasmoidItem {
 
     Window {
         id: hitWindow
-        // The panel does not route input in its outer margin. This transparent
-        // surface receives clicks to the right of the separator only.
-        width: 8
-        height: Math.max(1, divider.height)
+        // The panel moves clicks in its margins back inside the applet row, left
+        // of the separator. This transparent surface covers the section between
+        // the separator and the panel edge, so only that section is clickable.
+        width: root.hitWidth
+        height: root.hitHeight
         visible: !!root.panelWindow && !!root.panelScreen
             && root.panelWindow.visible && root.height > 0
         screen: root.panelScreen

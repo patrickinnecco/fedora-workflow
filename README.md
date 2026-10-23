@@ -4,18 +4,20 @@ Widget exibido no Plasma como **Scadutree Show Desktop**. O ID interno
 `com.scadutree.showdesktop` permanece estável para preservar o botão já
 instalado no painel.
 
-Plasmoide para Plasma 6. A faixa de 8 pixels lógicos usa a propriedade pública
+Plasmoide para Plasma 6. O botão usa a propriedade pública
 `KWindowSystem.showingDesktop` para ativar ou desativar o modo Show Desktop do
 KWin. O KWin preserva as janelas e aplica o modo a todos os monitores.
 
-O painel do Plasma reserva uma margem à direita do último applet, onde não
-encaminha cliques ao widget. A linha permanece junto à borda visual, e uma
-superfície Wayland transparente de 8 pixels à sua direita recebe os cliques.
-A célula à esquerda da linha não aciona o Show Desktop. A posição dessa área
-é calculada a partir da linha e do monitor do painel. Quando o painel flutua,
-a posição e a altura da linha seguem diretamente o progresso da animação do
-Plasma 6.7.5. A área clicável não recebe preenchimento colorido ao passar o
-mouse. A superfície pertence ao plasmoide e não executa serviço separado.
+O painel do Plasma reserva uma margem à direita do último applet e redireciona
+os cliques feitos nela para dentro da linha de applets, à esquerda da linha
+divisória. A linha é apenas um divisor visual. Uma superfície Wayland
+transparente cobre a seção visível entre a linha e a borda direita do painel
+e recebe os cliques; nenhum pixel da linha ou à sua esquerda aciona o Show
+Desktop. A posição e o tamanho dessa área são calculados a partir da linha,
+do fundo do painel e do monitor do painel. Quando o painel flutua, a linha e
+a área seguem diretamente o progresso da animação do Plasma 6.7.5. A área
+clicável não recebe preenchimento colorido ao passar o mouse. A superfície
+pertence ao plasmoide e não executa serviço separado.
 
 ## Arquivos
 
@@ -32,8 +34,7 @@ contém o mesmo conteúdo do diretório `package`.
 ## Ajuste visual
 
 A faixa usa as cores do tema Plasma. A linha divisória ocupa a altura visível
-do painel atual. Para alterar a largura da área clicável, ajuste os valores
-de largura do applet em `main.qml`.
+do painel atual. A área clicável vai da linha até a borda direita do painel.
 
 ## Remoção
 
