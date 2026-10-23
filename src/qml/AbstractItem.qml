@@ -51,6 +51,38 @@ PlasmaCore.ToolTipArea {
     signal wheel(var wheel)
     signal contextMenu(var mouse)
 
+    // Icon Drawer: drag this item between the panel and the drawer.
+    // The DragHandler takes the pointer over the item's own MouseArea (and an
+    // applet's compact representation) only after the drag threshold, so a
+    // normal click keeps working.
+    Drag.dragType: Drag.Automatic
+    Drag.supportedActions: Qt.MoveAction
+    Drag.proposedAction: Qt.MoveAction
+    Drag.mimeData: ({ "application/x-icondrawer-item": abstractItem.itemId })
+    Drag.onDragStarted: {
+        root.draggedFromDrawer = abstractItem.inHiddenLayout;
+        root.draggedItemId = abstractItem.itemId;
+    }
+    Drag.onDragFinished: dropAction => {
+        root.draggedItemId = "";
+        root.draggedFromDrawer = false;
+    }
+
+    DragHandler {
+        id: dragHandler
+        target: null
+        acceptedButtons: Qt.LeftButton
+        enabled: root.canMoveItems && abstractItem.itemId !== ""
+        onActiveChanged: if (active && !abstractItem.Drag.active) {
+            abstractItem.hideImmediately();
+            iconContainer.grabToImage(result => {
+                abstractItem.Drag.imageSource = result.url;
+                abstractItem.Drag.hotSpot = Qt.point(iconContainer.width / 2, iconContainer.height / 2);
+                abstractItem.Drag.active = true;
+            });
+        }
+    }
+
     PulseAnimation {
         targetItem: iconContainer
         running: (abstractItem.status === PlasmaCore.Types.NeedsAttentionStatus

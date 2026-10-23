@@ -52,6 +52,23 @@ PlasmaCore.ToolTipArea {
         }
     }
 
+    // Icon Drawer: dropping a panel item on the arrow stores it in the drawer,
+    // and hovering over the arrow while dragging opens the drawer.
+    PlacementDropArea {
+        id: arrowDropArea
+        anchors.fill: parent
+        placement: "drawer"
+    }
+
+    Timer {
+        interval: Kirigami.Units.humanMoment / 3
+        running: arrowDropArea.containsDrag && (!systemTrayState.expanded || systemTrayState.activeApplet !== null)
+        onTriggered: {
+            systemTrayState.setActiveApplet(null);
+            systemTrayState.expanded = true;
+        }
+    }
+
     Kirigami.Icon {
         anchors.fill: parent
 

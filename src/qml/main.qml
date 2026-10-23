@@ -37,6 +37,39 @@ ContainmentItem {
 
     readonly property alias hiddenModel: hiddenModel
 
+    // Icon Drawer: items are moved between the panel and the drawer by
+    // dragging them or from the drawer manager. Both only edit the native
+    // shownItems/hiddenItems lists; nothing is enabled or disabled here.
+    readonly property string drawerItemMimeType: "application/x-icondrawer-item"
+    property string draggedItemId: ""
+    property bool draggedFromDrawer: false
+    readonly property bool canMoveItems: !Plasmoid.configuration.showAllItems
+
+    function placementOf(itemId: string): string {
+        if (Plasmoid.configuration.shownItems.indexOf(itemId) !== -1) {
+            return "panel";
+        }
+        if (Plasmoid.configuration.hiddenItems.indexOf(itemId) !== -1) {
+            return "drawer";
+        }
+        return "auto";
+    }
+
+    function setPlacement(itemId: string, placement: string): void {
+        if (!itemId || !canMoveItems) {
+            return;
+        }
+        const shownItems = Array.from(Plasmoid.configuration.shownItems).filter(id => id !== itemId);
+        const hiddenItems = Array.from(Plasmoid.configuration.hiddenItems).filter(id => id !== itemId);
+        if (placement === "panel") {
+            shownItems.push(itemId);
+        } else if (placement === "drawer") {
+            hiddenItems.push(itemId);
+        }
+        Plasmoid.configuration.shownItems = shownItems;
+        Plasmoid.configuration.hiddenItems = hiddenItems;
+    }
+
     Component.onCompleted: {
         // We need all the plasmoiditems to be there for correct working of shortcuts.
         // Instantiators create the plasmoiditems: ensure this is done after
@@ -195,8 +228,13 @@ ContainmentItem {
                 readonly property bool autoSize: Plasmoid.configuration.scaleIconsToFit
 
                 readonly property int gridThickness: root.vertical ? root.width : root.height
+                // While an item is dragged out of the drawer, reserve one empty
+                // cell so the panel always has a place to drop it.
+                readonly property bool showsDropSlot: root.draggedItemId !== "" && root.draggedFromDrawer
+                readonly property int slotCount: count + (showsDropSlot ? 1 : 0)
+
                 // Should change to 2 rows/columns on a 56px panel (in standard DPI)
-                readonly property int rowsOrColumns: autoSize ? 1 : Math.max(1, Math.min(count, Math.floor(gridThickness / (smallIconSize + Kirigami.Units.smallSpacing))))
+                readonly property int rowsOrColumns: autoSize ? 1 : Math.max(1, Math.min(slotCount, Math.floor(gridThickness / (smallIconSize + Kirigami.Units.smallSpacing))))
 
                 // Add margins only if the panel is larger than a small icon (to avoid large gaps between tiny icons)
                 readonly property int cellSpacing: Kirigami.Units.smallSpacing * Plasmoid.configuration.iconSpacing
@@ -218,8 +256,8 @@ ContainmentItem {
                 }
 
                 //depending on the form factor, we are calculating only one dimension, second is always the same as root/parent
-                implicitHeight: root.vertical ? cellHeight * Math.ceil(count / rowsOrColumns) : root.height
-                implicitWidth: !root.vertical ? cellWidth * Math.ceil(count / rowsOrColumns) : root.width
+                implicitHeight: root.vertical ? cellHeight * Math.ceil(slotCount / rowsOrColumns) : root.height
+                implicitWidth: !root.vertical ? cellWidth * Math.ceil(slotCount / rowsOrColumns) : root.width
 
                 readonly property int itemSize: {
                     if (autoSize) {
@@ -264,8 +302,19 @@ ContainmentItem {
                 Layout.fillHeight: !vertical
                 Layout.alignment: vertical ? Qt.AlignVCenter : Qt.AlignHCenter
                 iconSize: tasksGrid.itemSize
-                visible: root.hiddenLayout.itemCount > 0
+                // Keep the arrow while dragging so a panel item can be dropped
+                // into an empty drawer.
+                visible: root.hiddenLayout.itemCount > 0 || root.draggedItemId !== ""
             }
+        }
+
+        // Dropping a drawer item on the visible icons pins it to the panel.
+        PlacementDropArea {
+            x: mainLayout.x + tasksGrid.x
+            y: mainLayout.y + tasksGrid.y
+            width: tasksGrid.width
+            height: tasksGrid.height
+            placement: "panel"
         }
 
         Timer {

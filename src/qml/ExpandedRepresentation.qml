@@ -23,6 +23,17 @@ Item {
 
     property alias hiddenLayout: hiddenItemsView.layout
     property alias plasmoidContainer: container
+    // Icon Drawer: shows the drawer manager instead of the hidden items grid.
+    property bool managingDrawer: false
+
+    Connections {
+        target: systemTrayState
+        function onExpandedChanged() {
+            if (!systemTrayState.expanded) {
+                popup.managingDrawer = false;
+            }
+        }
+    }
 
     // Header
     PlasmaExtras.PlasmoidHeading {
@@ -73,7 +84,12 @@ Item {
                 leftPadding: systemTrayState.activeApplet ? 0 : Kirigami.Units.largeSpacing
 
                 level: 1
-                text: systemTrayState.activeApplet ? systemTrayState.activeApplet.plasmoid.title : i18n("Status and Notifications")
+                text: {
+                    if (systemTrayState.activeApplet) {
+                        return systemTrayState.activeApplet.plasmoid.title;
+                    }
+                    return popup.managingDrawer ? i18nc("@title", "Organize Drawer") : i18n("Status and Notifications");
+                }
                 maximumLineCount: 1
                 textFormat: Text.PlainText
                 elide: Text.ElideRight
@@ -240,12 +256,32 @@ Item {
 
                 KeyNavigation.down: backButton.KeyNavigation.down
                 KeyNavigation.left: actionsButton.visible ? actionsButton : actionsButton.KeyNavigation.left
-                KeyNavigation.right: pinButton
+                KeyNavigation.right: manageButton.visible ? manageButton : pinButton
 
                 PlasmaComponents.ToolTip {
                     text: parent.visible ? parent.text : ""
                 }
                 onClicked: actionsButton.applet.plasmoid.internalAction("configure").trigger();
+            }
+
+            PlasmaComponents.ToolButton {
+                id: manageButton
+                visible: !systemTrayState.activeApplet
+                checkable: true
+                checked: popup.managingDrawer
+                onToggled: popup.managingDrawer = checked
+                icon.name: "view-list-details-symbolic"
+
+                display: PlasmaComponents.AbstractButton.IconOnly
+                text: i18nc("@action:button", "Organize Drawer")
+
+                KeyNavigation.down: backButton.KeyNavigation.down
+                KeyNavigation.left: configureButton.visible ? configureButton : configureButton.KeyNavigation.left
+                KeyNavigation.right: pinButton
+
+                PlasmaComponents.ToolTip {
+                    text: parent.text
+                }
             }
 
             PlasmaComponents.ToolButton {
@@ -259,7 +295,7 @@ Item {
                 text: i18n("Keep Open")
 
                 KeyNavigation.down: backButton.KeyNavigation.down
-                KeyNavigation.left: configureButton.visible ? configureButton : configureButton.KeyNavigation.left
+                KeyNavigation.left: manageButton.visible ? manageButton : configureButton.visible ? configureButton : configureButton.KeyNavigation.left
                 KeyNavigation.tab: hiddenItemsView.visible ? hiddenItemsView.layout : container.currentItem?.nextItemInFocusChain() ?? null
 
                 PlasmaComponents.ToolTip {
@@ -274,7 +310,7 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
             Layout.topMargin: Kirigami.Units.smallSpacing
-            visible: !systemTrayState.activeApplet
+            visible: !systemTrayState.activeApplet && !popup.managingDrawer
 
             KeyNavigation.up: pinButton
 
@@ -284,6 +320,13 @@ Item {
                     systemTrayState.oldVisualIndex = systemTrayState.newVisualIndex = -1;
                 }
             }
+        }
+
+        DrawerManager {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Layout.topMargin: Kirigami.Units.smallSpacing
+            visible: !systemTrayState.activeApplet && popup.managingDrawer
         }
 
         // Container for currently visible item
@@ -305,6 +348,16 @@ Item {
                 }
             }
         }
+    }
+
+    // Icon Drawer: dropping a panel item on the grid stores it in the drawer.
+    PlacementDropArea {
+        x: expandedRepresentation.x + hiddenItemsView.x
+        y: expandedRepresentation.y + hiddenItemsView.y
+        width: hiddenItemsView.width
+        height: hiddenItemsView.height
+        visible: hiddenItemsView.visible
+        placement: "drawer"
     }
 
     // Footer
