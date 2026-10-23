@@ -9,10 +9,11 @@ Plasmoide para Plasma 6. A faixa de 8 pixels lógicos usa a propriedade pública
 KWin. O KWin preserva as janelas e aplica o modo a todos os monitores.
 
 O painel do Plasma reserva uma margem à direita do último applet. O widget
-desenha a linha nessa margem para ficar próxima da borda física. Como o painel
-não encaminha cliques nessa margem ao applet, a área clicável de 8 pixels fica
-logo à direita do relógio, à esquerda da linha. Quando o KWin mostra o desktop
-e o painel flutua, a linha recua para dentro da célula e continua visível.
+desenha a linha logo à direita da área clicável, reduzindo o vão visual depois
+do relógio. Como o painel não encaminha cliques na margem externa ao applet,
+a área clicável de 8 pixels fica dentro da célula, à esquerda da linha. Quando
+o KWin mostra o desktop e o painel flutua, a linha recua para dentro da célula
+e continua visível.
 A área clicável não recebe preenchimento colorido ao passar o mouse. Não há
 janela auxiliar nem serviço em segundo plano.
 

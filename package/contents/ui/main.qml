@@ -24,7 +24,8 @@ PlasmoidItem {
         width: 1
         // Plasma can draw in the right margin but cannot route clicks there.
         // Keep pointer inside the applet, to the left of this divider.
-        x: root.desktopVisible ? root.width - 1 : root.width + 8
+        // Keep the separator near the hit area, with one pixel of breathing room.
+        x: root.desktopVisible ? root.width - 1 : root.width + 1
         y: root.desktopVisible ? 0 : -root.panelPadding
         height: root.desktopVisible ? root.height : root.height + 2 * root.panelPadding
         color: Kirigami.Theme.textColor
