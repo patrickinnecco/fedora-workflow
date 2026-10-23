@@ -8,7 +8,7 @@
         "Id": "com.scadutree.showdesktop",
         "License": "MIT",
         "Name": "Scadutree Show Desktop",
-        "Version": "1.1.0"
+        "Version": "1.2.2"
     },
     "X-Plasma-API-Minimum-Version": "6.0"
 }
