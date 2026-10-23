@@ -13,7 +13,8 @@ desenha a linha logo à direita da área clicável, reduzindo o vão visual depo
 do relógio. Como o painel não encaminha cliques na margem externa ao applet,
 a área clicável de 8 pixels fica dentro da célula, à esquerda da linha. Quando
 o KWin mostra o desktop e o painel flutua, a linha recua para dentro da célula
-e continua visível.
+e continua visível. A posição e a altura seguem diretamente o progresso de
+animação do próprio painel do Plasma 6.7.5.
 A área clicável não recebe preenchimento colorido ao passar o mouse. Não há
 janela auxiliar nem serviço em segundo plano.
 

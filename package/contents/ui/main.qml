@@ -11,6 +11,20 @@ PlasmoidItem {
     readonly property bool desktopVisible: KWindowSystem.KWindowSystem.showingDesktop
     // The current panel has eight pixels above and below its applet row.
     readonly property int panelPadding: 8
+    // Follow the panel's actual animation value instead of starting another animation.
+    readonly property var panelRoot: {
+        let item = root.parent
+        while (item) {
+            if (typeof item.floatingness === "number"
+                    && typeof item.floatingnessTarget === "number"
+                    && typeof item.floatingnessAnimationDuration === "number") {
+                return item
+            }
+            item = item.parent
+        }
+        return null
+    }
+    readonly property real floatingProgress: panelRoot ? panelRoot.floatingness : (desktopVisible ? 1 : 0)
 
     // A fixed logical width keeps the button narrow even on a tall panel.
     implicitWidth: 8
@@ -25,9 +39,9 @@ PlasmoidItem {
         // Plasma can draw in the right margin but cannot route clicks there.
         // Keep pointer inside the applet, to the left of this divider.
         // Keep the separator near the hit area, with one pixel of breathing room.
-        x: root.desktopVisible ? root.width - 1 : root.width + 1
-        y: root.desktopVisible ? 0 : -root.panelPadding
-        height: root.desktopVisible ? root.height : root.height + 2 * root.panelPadding
+        x: Math.round(root.width + 1 - 2 * root.floatingProgress)
+        y: Math.round(-root.panelPadding * (1 - root.floatingProgress))
+        height: Math.round(root.height + 2 * root.panelPadding * (1 - root.floatingProgress))
         color: Kirigami.Theme.textColor
         opacity: pointer.containsMouse ? 0.42 : 0.25
     }
