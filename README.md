@@ -1,4 +1,8 @@
-# Scadutree Show Desktop
+# linux-showdesktop
+
+Widget exibido no Plasma como **Scadutree Show Desktop**. O ID interno
+`com.scadutree.showdesktop` permanece estável para preservar o botão já
+instalado no painel.
 
 Plasmoide para Plasma 6. A faixa de 8 pixels lógicos usa a propriedade pública
 `KWindowSystem.showingDesktop` para ativar ou desativar o modo Show Desktop do
