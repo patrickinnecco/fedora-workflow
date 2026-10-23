@@ -8,15 +8,14 @@ Plasmoide para Plasma 6. A faixa de 8 pixels lógicos usa a propriedade pública
 `KWindowSystem.showingDesktop` para ativar ou desativar o modo Show Desktop do
 KWin. O KWin preserva as janelas e aplica o modo a todos os monitores.
 
-O painel do Plasma reserva uma margem à direita do último applet. O widget
-desenha a linha logo à direita da área clicável, reduzindo o vão visual depois
-do relógio. Como o painel não encaminha cliques na margem externa ao applet,
-a área clicável de 8 pixels fica dentro da célula, à esquerda da linha. Quando
-o KWin mostra o desktop e o painel flutua, a linha recua para dentro da célula
-e continua visível. A posição e a altura seguem diretamente o progresso de
-animação do próprio painel do Plasma 6.7.5.
-A área clicável não recebe preenchimento colorido ao passar o mouse. Não há
-janela auxiliar nem serviço em segundo plano.
+O painel do Plasma reserva uma margem à direita do último applet, onde não
+encaminha cliques ao widget. A linha permanece junto à borda visual, e uma
+superfície Wayland transparente de 8 pixels à sua direita recebe os cliques.
+A célula à esquerda da linha não aciona o Show Desktop. A posição dessa área
+é calculada a partir da linha e do monitor do painel. Quando o painel flutua,
+a posição e a altura da linha seguem diretamente o progresso da animação do
+Plasma 6.7.5. A área clicável não recebe preenchimento colorido ao passar o
+mouse. A superfície pertence ao plasmoide e não executa serviço separado.
 
 ## Arquivos
 
