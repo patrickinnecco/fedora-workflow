@@ -1,7 +1,17 @@
-# linux-changes
+# fedora-workflow
 
-Ajustes locais no Fedora 44 KDE Plasma 6.7.5 (Wayland, NVIDIA RTX 5070), com dois monitores:
+Ajustes e widgets do meu Fedora 44 KDE Plasma 6.7.5 (Wayland, NVIDIA RTX 5070), com dois monitores:
 um 2560×1440 de 27″ a **125%** (DP-2) e um 1920×1080 a **100%** (DP-1).
+
+| Pasta | O que é |
+|---|---|
+| [`display-scale/`](display-scale/) | Escala 125%/100% sem vão entre os monitores |
+| [`chatgpt-wayland/`](chatgpt-wayland/) | ChatGPT em Wayland nativo (corrige a faixa na janela maximizada e o borrão no 1080p) |
+| [`linux-icondrawer/`](linux-icondrawer/) | Icon Drawer: bandeja do sistema com gaveta estilo Windows (fork da System Tray do Plasma 6.7.5) — ver o [README](linux-icondrawer/README.md) |
+| [`linux-showdesktop/`](linux-showdesktop/) | Scadutree Show Desktop: botão de mostrar a área de trabalho no canto do painel — ver o [README](linux-showdesktop/README.md) |
+
+`linux-icondrawer/` e `linux-showdesktop/` vieram dos repositórios de mesmo nome, com o histórico de commits
+preservado. Os comandos de build e instalação nos READMEs deles devem ser executados dentro da respectiva pasta.
 
 ## 1. `display-scale/` — escala 125%/100% sem vão entre monitores
 
