@@ -1,0 +1,11 @@
+--- chatgpt-wayland/chatgpt.desktop.original	2026-10-24 15:58:42.153687549 -0300
++++ chatgpt-wayland/chatgpt.desktop	2026-10-24 15:58:42.152687538 -0300
+@@ -2,7 +2,7 @@
+ Name=ChatGPT
+ Comment=ChatGPT by OpenAI
+ GenericName=AI assistant
+-Exec=env GTK_IM_MODULE=fcitx XMODIFIERS=@im=fcitx chatgpt %U
++Exec=env GTK_IM_MODULE=fcitx XMODIFIERS=@im=fcitx chatgpt --ozone-platform=wayland --enable-wayland-ime --wayland-text-input-version=3 %U
+ Icon=chatgpt
+ Type=Application
+ StartupNotify=true
