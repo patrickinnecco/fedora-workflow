@@ -50,9 +50,11 @@ PlasmaComponents3.ScrollView {
 
         pixelAligned: true
 
-        readonly property int itemCount: model.count
+        // Icon Drawer: read from the model itself. The grid's count is only
+        // updated while the drawer is open, and the arrow needs it before.
+        readonly property int itemCount: root.drawerModel.count
 
-        model: root.hiddenModel
+        model: root.drawerModel
         delegate: ItemLoader {
             width: hiddenTasks.cellWidth
             height: hiddenTasks.cellHeight

@@ -36,6 +36,7 @@ ContainmentItem {
     readonly property bool oneRowOrColumn: tasksGrid.rowsOrColumns === 1
 
     readonly property alias hiddenModel: hiddenModel
+    readonly property alias drawerModel: drawerModel
 
     // Icon Drawer: items are moved between the panel and the drawer by
     // dragging them or from the drawer manager. Both only edit the native
@@ -105,6 +106,30 @@ ContainmentItem {
             let value = sourceModel.data(sourceModel.index(sourceRow, 0, sourceParent), filterRole);
             return value === PlasmaCore.Types.PassiveStatus
         }
+        Component.onCompleted: sourceModel = Plasmoid.systemTrayModel // avoid unnecessary binding, it causes loops
+    }
+
+    // Icon Drawer: what the drawer grid shows, the hidden items minus, with
+    // "show only apps" on, the system items (tray widgets such as Volume or
+    // Network, and system services such as the input method). hiddenModel
+    // stays complete, so the hidden widgets keep working through their
+    // shortcuts and popups. It filters the tray model directly: stacked on
+    // hiddenModel, it missed the app icons that register after startup.
+    KItemModels.KSortFilterProxyModel {
+        id: drawerModel
+        filterRoleName: "effectiveStatus"
+        // A new callback for each setting value makes the model refilter.
+        filterRowCallback: {
+            const appsOnly = Plasmoid.configuration.hideSystemItemsInDrawer;
+            return (sourceRow, sourceParent) => {
+                const index = sourceModel.index(sourceRow, 0, sourceParent);
+                return sourceModel.data(index, filterRole) === PlasmaCore.Types.PassiveStatus
+                    && !(appsOnly && sourceModel.data(index, Plasmoid.systemItemRole) === true);
+            };
+        }
+        // Rows let through by a filter change can arrive as a layout change,
+        // which does not notify count; the arrow's visibility depends on it.
+        onLayoutChanged: rowCountChanged()
         Component.onCompleted: sourceModel = Plasmoid.systemTrayModel // avoid unnecessary binding, it causes loops
     }
 

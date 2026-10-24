@@ -689,11 +689,38 @@ bool BackgroundAppsFilteredModel::filterAcceptsRow(int source_row, const QModelI
 SystemTrayModel::SystemTrayModel(QObject *parent)
     : QConcatenateTablesProxyModel(parent)
 {
+    m_roleNames.insert(static_cast<int>(Role::IsSystemItem), QByteArrayLiteral("isSystemItem"));
 }
 
 QHash<int, QByteArray> SystemTrayModel::roleNames() const
 {
     return m_roleNames;
+}
+
+QVariant SystemTrayModel::data(const QModelIndex &index, int role) const
+{
+    if (role != static_cast<int>(Role::IsSystemItem)) {
+        return QConcatenateTablesProxyModel::data(index, role);
+    }
+
+    // Tray widgets (Volume, Network, Notifications...) are part of Plasma.
+    if (index.data(static_cast<int>(BaseModel::BaseRole::ItemType)).toString() == u"Plasmoid"_s) {
+        return true;
+    }
+
+    // Application icons that declare themselves as system services or
+    // hardware controls, such as the input method.
+    const QString category = index.data(static_cast<int>(BaseModel::BaseRole::Category)).toString();
+    if (category == u"SystemServices"_s || category == u"Hardware"_s) {
+        return true;
+    }
+
+    // System components that register as ordinary application icons.
+    static const QStringList systemItemIds = {
+        u"Xwayland Video Bridge"_s,
+        u"Discover Notifier_org.kde.DiscoverNotifier"_s,
+    };
+    return systemItemIds.contains(index.data(static_cast<int>(BaseModel::BaseRole::ItemId)).toString());
 }
 
 void SystemTrayModel::addSourceModel(QAbstractItemModel *sourceModel)

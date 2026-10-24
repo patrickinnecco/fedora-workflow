@@ -33,6 +33,7 @@ KCMUtils.ScrollViewKCM {
     property int cfg_iconSpacing
     property bool cfg_reverseIconOrder
     property bool cfg_showAllItems
+    property bool cfg_hideSystemItemsInDrawer
     property list<string> cfg_shownItems: []
     property list<string> cfg_hiddenItems: []
     property list<string> cfg_extraItems: []
@@ -300,6 +301,13 @@ KCMUtils.ScrollViewKCM {
 
                 currentIndex: iconsPage.cfg_reverseIconOrder ? 1 : 0
                 onActivated: iconsPage.cfg_reverseIconOrder = currentValue;
+            }
+
+            QQC2.CheckBox {
+                Kirigami.FormData.label: i18nc("@label:checkbox", "Drawer:")
+                text: i18nc("@option:check", "Show only apps (hide system items)")
+                checked: iconsPage.cfg_hideSystemItemsInDrawer
+                onToggled: iconsPage.cfg_hideSystemItemsInDrawer = checked
             }
 
             QQC2.Label {

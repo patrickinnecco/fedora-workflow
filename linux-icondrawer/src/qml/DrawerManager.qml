@@ -91,7 +91,7 @@ PlasmaComponents3.ScrollView {
         }
 
         footer: PlasmaComponents3.Label {
-            width: ListView.view.width
+            width: itemsList.width
             topPadding: Kirigami.Units.largeSpacing
             leftPadding: Kirigami.Units.smallSpacing
             rightPadding: Kirigami.Units.smallSpacing

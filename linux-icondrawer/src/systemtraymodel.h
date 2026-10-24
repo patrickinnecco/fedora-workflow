@@ -209,9 +209,16 @@ class SystemTrayModel : public QConcatenateTablesProxyModel
 {
     Q_OBJECT
 public:
+    enum class Role {
+        // Icon Drawer: true for items that come with the system rather than
+        // with an installed application, used to hide them from the drawer.
+        IsSystemItem = static_cast<int>(BaseModel::BaseRole::LastBaseRole) + 2000,
+    };
+
     explicit SystemTrayModel(QObject *parent = nullptr);
 
     QHash<int, QByteArray> roleNames() const override;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
     void addSourceModel(QAbstractItemModel *sourceModel);
 

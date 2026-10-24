@@ -20,6 +20,20 @@ contexto, atalhos e a página de configuração.
 - **Organizar a gaveta:** o botão *Organize Drawer*, no cabeçalho da gaveta,
   lista os ícones ativos, cada um com três opções: *Panel* (sempre no
   painel), *Drawer* (só na gaveta) e *Auto* (o app decide).
+- **Mostrar só os apps:** o botão de filtro *Show Only Apps*, no cabeçalho da
+  gaveta, esconde dela os itens do sistema e deixa só os apps instalados.
+  Clique de novo para ver os itens do sistema. A escolha fica gravada e vale
+  depois de reiniciar. A mesma opção está na página de configuração, em
+  *Drawer: Show only apps (hide system items)*. São considerados do sistema:
+  - os widgets da bandeja (Volume, Rede, Notificações, Discos etc.);
+  - os ícones de categoria *SystemServices* ou *Hardware*, como o do método
+    de entrada (Fcitx);
+  - componentes do sistema que aparecem como ícones comuns: a
+    *Xwayland Video Bridge* e o aviso de atualizações do Discover.
+
+  Os itens escondidos continuam carregados e continuam listados no
+  *Organize Drawer*, de onde podem voltar para o painel. Itens do sistema que
+  estão no painel não mudam.
 
 O arrasto e o gerenciador gravam apenas as mesmas chaves que a configuração
 nativa usa (`shownItems` e `hiddenItems`). Nenhum item é habilitado ou
@@ -99,6 +113,14 @@ sobre Xvfb, com mouse simulado por `xdotool`:
   vai para a gaveta.
 - *Organize Drawer*: mostra o estado correto e move o Volume para a gaveta.
 - Um clique simples continua abrindo o item, sem alterar a configuração.
+- *Show Only Apps* (sessão Plasma aninhada em Wayland, com dois apps
+  StatusNotifierItem de teste na gaveta, um de categoria *ApplicationStatus* e
+  outro *SystemServices*): ligado pelo botão ou pela página de configuração, a
+  gaveta mostra só o primeiro. Desligado, Notificações, Volume, Discos e o
+  segundo app voltam. A configuração grava `hideSystemItemsInDrawer`. Depois de
+  5 reinícios do plasmashell com a opção ligada, o botão continuou marcado e a
+  seta apareceu. Fechando o app, a seta some; abrindo de novo com o filtro
+  ligado, ele volta à gaveta.
 
 Ainda não foi testado em um painel real do Plasma sobre Wayland, nem com dois
 monitores.

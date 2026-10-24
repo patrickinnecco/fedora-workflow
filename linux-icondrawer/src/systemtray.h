@@ -31,6 +31,9 @@ class SystemTray : public Plasma::Containment
     Q_OBJECT
     Q_PROPERTY(QAbstractItemModel *systemTrayModel READ sortedSystemTrayModel CONSTANT)
     Q_PROPERTY(QAbstractItemModel *configSystemTrayModel READ configSystemTrayModel CONSTANT)
+    // Icon Drawer: the systemTrayModel role that tells system items apart
+    // from installed applications
+    Q_PROPERTY(int systemItemRole READ systemItemRole CONSTANT)
 
 public:
     SystemTray(QObject *parent, const KPluginMetaData &data, const QVariantList &args);
@@ -43,6 +46,8 @@ public:
     QAbstractItemModel *sortedSystemTrayModel();
 
     QAbstractItemModel *configSystemTrayModel();
+
+    int systemItemRole() const;
 
     // Invocable utilities
     /**

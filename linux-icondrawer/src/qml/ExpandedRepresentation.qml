@@ -256,12 +256,34 @@ Item {
 
                 KeyNavigation.down: backButton.KeyNavigation.down
                 KeyNavigation.left: actionsButton.visible ? actionsButton : actionsButton.KeyNavigation.left
-                KeyNavigation.right: manageButton.visible ? manageButton : pinButton
+                KeyNavigation.right: appsOnlyButton.visible ? appsOnlyButton : pinButton
 
                 PlasmaComponents.ToolTip {
                     text: parent.visible ? parent.text : ""
                 }
                 onClicked: actionsButton.applet.plasmoid.internalAction("configure").trigger();
+            }
+
+            // Icon Drawer: hides system items from the drawer, leaving only
+            // installed applications. The choice is remembered.
+            PlasmaComponents.ToolButton {
+                id: appsOnlyButton
+                visible: !systemTrayState.activeApplet
+                checkable: true
+                checked: Plasmoid.configuration.hideSystemItemsInDrawer
+                onToggled: Plasmoid.configuration.hideSystemItemsInDrawer = checked
+                icon.name: "view-filter-symbolic"
+
+                display: PlasmaComponents.AbstractButton.IconOnly
+                text: i18nc("@action:button show only application icons in the drawer", "Show Only Apps")
+
+                KeyNavigation.down: backButton.KeyNavigation.down
+                KeyNavigation.left: configureButton.visible ? configureButton : configureButton.KeyNavigation.left
+                KeyNavigation.right: manageButton
+
+                PlasmaComponents.ToolTip {
+                    text: parent.text
+                }
             }
 
             PlasmaComponents.ToolButton {
@@ -276,7 +298,7 @@ Item {
                 text: i18nc("@action:button", "Organize Drawer")
 
                 KeyNavigation.down: backButton.KeyNavigation.down
-                KeyNavigation.left: configureButton.visible ? configureButton : configureButton.KeyNavigation.left
+                KeyNavigation.left: appsOnlyButton
                 KeyNavigation.right: pinButton
 
                 PlasmaComponents.ToolTip {

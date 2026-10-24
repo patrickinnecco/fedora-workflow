@@ -26,6 +26,10 @@
         <label>If true, all systray entries will be always in the main area, outside the popup.</label>
         <default>false</default>
     </entry>
+    <entry name="hideSystemItemsInDrawer" type="bool">
+        <label>If true, the drawer only lists application icons: system tray widgets (plasmoids) stored in the drawer are not shown there.</label>
+        <default>false</default>
+    </entry>
     <entry name="knownItems" type="StringList" hidden="true">
       <default></default>
     </entry>

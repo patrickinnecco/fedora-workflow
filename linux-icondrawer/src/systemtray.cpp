@@ -669,6 +669,11 @@ void SystemTray::setItemPlacement(const QString &itemId, const QString &placemen
     }
 }
 
+int SystemTray::systemItemRole() const
+{
+    return static_cast<int>(SystemTrayModel::Role::IsSystemItem);
+}
+
 K_PLUGIN_CLASS_WITH_JSON(SystemTray, "metadata.json")
 
 #include "systemtray.moc"
