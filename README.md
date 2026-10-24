@@ -7,6 +7,7 @@ um 2560×1440 de 27″ a **125%** (DP-2) e um 1920×1080 a **100%** (DP-1).
 |---|---|
 | [`display-scale/`](display-scale/) | Escala 125%/100% sem vão entre os monitores |
 | [`chatgpt-wayland/`](chatgpt-wayland/) | ChatGPT em Wayland nativo (corrige a faixa na janela maximizada e o borrão no 1080p) |
+| [`spotify-wayland/`](spotify-wayland/) | Spotify (snap) em Wayland nativo (corrige o borrão no 1080p) |
 | [`linux-icondrawer/`](linux-icondrawer/) | Icon Drawer: bandeja do sistema com gaveta estilo Windows (fork da System Tray do Plasma 6.7.5) — ver o [README](linux-icondrawer/README.md) |
 | [`linux-showdesktop/`](linux-showdesktop/) | Scadutree Show Desktop: botão de mostrar a área de trabalho no canto do painel — ver o [README](linux-showdesktop/README.md) |
 
@@ -44,6 +45,27 @@ antigo ao trocar de monitor; re-maximizar resolve.
 
 Aplicar: `chatgpt-wayland/apply.sh` e reiniciar o ChatGPT. Reverter: `chatgpt-wayland/revert.sh`.
 A diferença está em `chatgpt-wayland/chatgpt.desktop.diff`.
+
+## 3. `spotify-wayland/` — Spotify em Wayland nativo
+
+O Spotify do snap (CEF/Chromium) abre por padrão no XWayland e, portanto, fica borrado no monitor a 100%
+(mesma reamostragem 0,8× do ChatGPT). O snap já tem acesso a Wayland; basta pedir ao Chromium:
+
+```
+spotify --enable-features=UseOzonePlatform,WaylandWindowDecorations --ozone-platform=wayland \
+        --enable-wayland-ime --wayland-text-input-version=3
+```
+
+Testado: com o atalho abre sem nenhuma janela X11 e, maximizado, ocupa a área exata nos dois monitores
+(2048×1102 no DP-2, 1920×1080 no DP-1). Aplicar: `spotify-wayland/apply.sh`. Reverter: `spotify-wayland/revert.sh`.
+
+## Apps verificados que não precisam de mudança
+
+- **Opera GX**: já roda em Wayland nativo.
+- **Spotifast** (Flatpak): só tem acesso a Wayland.
+- **DLSS Updater** (Flatpak, Flet/Flutter + GTK3): abre em Wayland nativo.
+- **Steam**: não tem cliente Wayland; continua no XWayland (nítido no 1440p, borrado no 1080p).
+- **xwaylandvideobridge**: auxiliar do KDE, X11 por design (é invisível).
 
 ## Limitação conhecida (sem correção local)
 

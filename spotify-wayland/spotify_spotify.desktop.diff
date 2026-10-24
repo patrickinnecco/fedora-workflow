@@ -1,0 +1,11 @@
+--- spotify-wayland/spotify_spotify.desktop.original	2026-10-24 16:09:26.927421070 -0300
++++ spotify-wayland/spotify_spotify.desktop	2026-10-24 16:09:26.926466532 -0300
+@@ -5,7 +5,7 @@
+ GenericName=Music Player
+ Icon=/var/lib/snapd/snap/spotify/current/usr/share/spotify/icons/spotify-linux-128.png
+ X-SnapAppName=spotify
+-Exec=/var/lib/snapd/snap/bin/spotify %U
++Exec=/var/lib/snapd/snap/bin/spotify --enable-features=UseOzonePlatform,WaylandWindowDecorations --ozone-platform=wayland --enable-wayland-ime --wayland-text-input-version=3 %U
+ Terminal=false
+ MimeType=x-scheme-handler/spotify;
+ Categories=Audio;Music;Player;AudioVideo;
