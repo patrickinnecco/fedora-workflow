@@ -6,8 +6,7 @@ um 2560×1440 de 27″ a **125%** (DP-2) e um 1920×1080 a **100%** (DP-1).
 | Pasta | O que é |
 |---|---|
 | [`display-scale/`](display-scale/) | Escala 125%/100% sem vão entre os monitores |
-| [`chatgpt-wayland/`](chatgpt-wayland/) | ChatGPT em Wayland nativo (corrige a faixa na janela maximizada e o borrão no 1080p) |
-| [`spotify-wayland/`](spotify-wayland/) | Spotify (snap) em Wayland nativo (corrige o borrão no 1080p) |
+| `*-wayland/` | Apps Electron/Chromium em Wayland nativo, nítidos nos dois monitores |
 | [`linux-icondrawer/`](linux-icondrawer/) | Icon Drawer: bandeja do sistema com gaveta estilo Windows (fork da System Tray do Plasma 6.7.5) — ver o [README](linux-icondrawer/README.md) |
 | [`linux-showdesktop/`](linux-showdesktop/) | Scadutree Show Desktop: botão de mostrar a área de trabalho no canto do painel — ver o [README](linux-showdesktop/README.md) |
 
@@ -24,52 +23,38 @@ a largura lógica dele passa a 2048, deixando um vão de 512 px entre as telas.
 
 Reverter: `display-scale/revert.sh` (volta ao teste com ambos a 100%).
 
-## 2. `chatgpt-wayland/` — ChatGPT em Wayland nativo
+## 2. `*-wayland/` — apps Electron/Chromium em Wayland nativo
 
-**Problema:** maximizado no monitor 2, o ChatGPT deixava 1 px à direita e 1 px embaixo mostrando o que estava atrás.
-O KWin oferecia 1920×1080 (Dolphin e Opera ocupam exatamente isso), mas o ChatGPT enviava 1919×1079.
+**Problema:** apps baseados em Electron ou Chromium (incluindo CEF) abrem por padrão no **XWayland**. Em escala
+mista isso causa dois defeitos:
 
-**Causa:** o app (Electron/Chromium 155) roda por padrão no **XWayland**. Com escala de XWayland 1,25, o KWin
-converte coordenadas X fracionárias; 2399 ÷ 1,25 = 1919,2 → 1919. Além disso, no monitor a 100% um app X11
-é desenhado em 1,25× e reduzido a 0,8× pelo compositor, o que o deixa borrado.
+- **Borrão no monitor a 100%:** o XWayland usa uma única escala para todas as telas (aqui 1,25). No monitor a
+  100%, o app desenha em 1,25× e o compositor reduz a imagem para 0,8×.
+- **Faixa na janela maximizada:** o KWin converte coordenadas X fracionárias, e o arredondamento pode deixar a
+  janela 1 px menor que a área (2399 ÷ 1,25 = 1919,2 → 1919), mostrando o que está atrás na borda.
 
-**Mudança:** o atalho local passa a abrir o app em Wayland nativo, mantendo o fcitx:
-
-```
-chatgpt --ozone-platform=wayland --enable-wayland-ime --wayland-text-input-version=3
-```
-
-Testado com uma instância separada: 20/20 trocas de monitor com a janela maximizada ocuparam a área exata
-(1920×1080 no DP-1, 2048×1102 no DP-2). Ressalva: logo após abrir o app, o Chromium às vezes mantém o tamanho
-antigo ao trocar de monitor; re-maximizar resolve.
-
-Aplicar: `chatgpt-wayland/apply.sh` e reiniciar o ChatGPT. Reverter: `chatgpt-wayland/revert.sh`.
-A diferença está em `chatgpt-wayland/chatgpt.desktop.diff`.
-
-## 3. `spotify-wayland/` — Spotify em Wayland nativo
-
-O Spotify do snap (CEF/Chromium) abre por padrão no XWayland e, portanto, fica borrado no monitor a 100%
-(mesma reamostragem 0,8× do ChatGPT). O snap já tem acesso a Wayland; basta pedir ao Chromium:
+**Mudança:** cada pasta `*-wayland/` contém um atalho `.desktop` local, que tem precedência sobre o do sistema
+ou do snap e passa a abrir o app em Wayland nativo, mantendo o IME do fcitx:
 
 ```
-spotify --enable-features=UseOzonePlatform,WaylandWindowDecorations --ozone-platform=wayland \
-        --enable-wayland-ime --wayland-text-input-version=3
+--enable-features=UseOzonePlatform,WaylandWindowDecorations --ozone-platform=wayland \
+--enable-wayland-ime --wayland-text-input-version=3
 ```
 
-Testado: com o atalho abre sem nenhuma janela X11 e, maximizado, ocupa a área exata nos dois monitores
-(2048×1102 no DP-2, 1920×1080 no DP-1). Aplicar: `spotify-wayland/apply.sh`. Reverter: `spotify-wayland/revert.sh`.
+Os apps mais novos só precisam de `--ozone-platform=wayland`; os demais também precisam de `UseOzonePlatform`.
+Cada pasta traz o atalho original, o diff e os scripts `apply.sh` / `revert.sh`. Depois de aplicar, reinicie o app.
 
-## Apps verificados que não precisam de mudança
+**Testado:** os apps abrem sem nenhuma janela X11 e, maximizados, ocupam a área exata nos dois monitores
+(2048×1102 no DP-2, 1920×1080 no DP-1), inclusive em 20 trocas seguidas de monitor. Ressalva: logo após abrir
+um app, o Chromium às vezes mantém o tamanho antigo ao trocar de monitor; re-maximizar resolve.
 
-- **Opera GX**: já roda em Wayland nativo.
-- **Spotifast** (Flatpak): só tem acesso a Wayland.
-- **DLSS Updater** (Flatpak, Flet/Flutter + GTK3): abre em Wayland nativo.
-- **Steam**: não tem cliente Wayland; continua no XWayland (nítido no 1440p, borrado no 1080p).
-- **xwaylandvideobridge**: auxiliar do KDE, X11 por design (é invisível).
+Apps que já rodam em Wayland nativo (Flatpaks só com acesso a Wayland, apps GTK3/Flutter e navegadores já
+configurados) não precisam de mudança. Apps sem modo Wayland continuam no XWayland: nítidos no 1440p e
+borrados no 1080p.
 
 ## Limitação conhecida (sem correção local)
 
-Apps Qt/Wayland (Dolphin etc.) perdem um pouco de nitidez no monitor a 100% sempre que outra tela está
+Apps Qt/Wayland perdem um pouco de nitidez no monitor a 100% sempre que outra tela está
 com escala ≠ 100%: o Qt 6.11.2 desliga o hinting das fontes com base no maior DPR da aplicação
 (`qfontconfigdatabase.cpp`, `isDprScaling()`). Ver [QTBUG-129731](https://qt-project.atlassian.net/browse/QTBUG-129731)
 (aberto) e [KDE bug 491015](https://bugs.kde.org/show_bug.cgi?id=491015).
