@@ -1,0 +1,30 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Marco Martin",
+                "Email": "mart@kde.org"
+            },
+            {
+                "Name": "Patrick Innecco",
+                "Email": "patrickinnecco@outlook.com"
+            }
+        ],
+        "BugReportUrl": "https://github.com/patrickinnecco/linux-icondrawer/issues",
+        "Category": "Windows and Tasks",
+        "Description": "System Tray with a Windows-style icon drawer: drag icons between the panel and the drawer",
+        "Description[pt_BR]": "Bandeja do sistema com gaveta de ícones no estilo do Windows: arraste ícones entre o painel e a gaveta",
+        "EnabledByDefault": true,
+        "FormFactors": [
+            "desktop"
+        ],
+        "Icon": "preferences-desktop-notification",
+        "License": "GPL-2.0+",
+        "Name": "Icon Drawer",
+        "Name[pt_BR]": "Gaveta de Ícones",
+        "Version": "1.0",
+        "Website": "https://github.com/patrickinnecco/linux-icondrawer"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-ContainmentType": "CustomEmbedded"
+}
