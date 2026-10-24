@@ -310,13 +310,37 @@ ContainmentItem {
             }
         }
 
-        // Dropping a drawer item on the visible icons pins it to the panel.
+        // One drop area covers the icons and the arrow: dropping a drawer item
+        // on the icons pins it to the panel, dropping a panel item on the arrow
+        // stores it in the drawer. On Wayland a separate drop area inside the
+        // arrow never received the drag: the drop went to the tray's
+        // DnD.DropArea below, which accepts every move. One area that receives
+        // the drag as soon as it starts avoids that hand-over.
         PlacementDropArea {
-            x: mainLayout.x + tasksGrid.x
-            y: mainLayout.y + tasksGrid.y
-            width: tasksGrid.width
-            height: tasksGrid.height
-            placement: "panel"
+            id: trayDropArea
+
+            readonly property bool overArrow: {
+                if (!containsDrag || !expander.visible) {
+                    return false;
+                }
+                const pos = expander.mapFromItem(trayDropArea, drag.x, drag.y);
+                return expander.contains(pos);
+            }
+
+            anchors.fill: mainLayout
+            placement: overArrow ? "drawer" : "panel"
+            highlightItem: overArrow ? expander : tasksGrid
+
+            // Hovering over the arrow while dragging opens the drawer.
+            Timer {
+                interval: Kirigami.Units.humanMoment / 3
+                running: trayDropArea.overArrow && trayDropArea.applicable
+                    && (!systemTrayState.expanded || systemTrayState.activeApplet !== null)
+                onTriggered: {
+                    systemTrayState.setActiveApplet(null);
+                    systemTrayState.expanded = true;
+                }
+            }
         }
 
         Timer {
