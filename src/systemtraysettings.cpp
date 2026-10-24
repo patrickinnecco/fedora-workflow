@@ -110,6 +110,40 @@ void SystemTraySettings::cleanupPlugin(const QString &pluginId)
     writeConfigValue(HIDDEN_ITEMS_KEY, hidden);
 }
 
+void SystemTraySettings::setItemPlacement(const QString &itemId, const QString &placement)
+{
+    if (!config || itemId.isEmpty()) {
+        return;
+    }
+
+    QStringList shown = shownItems();
+    QStringList hidden = hiddenItems();
+    shown.removeAll(itemId);
+    hidden.removeAll(itemId);
+    if (placement == QLatin1String("panel")) {
+        shown << itemId;
+    } else if (placement == QLatin1String("drawer")) {
+        hidden << itemId;
+    }
+
+    // Write both lists before notifying, so the models never see the item in
+    // an intermediate state, and notify right away instead of waiting for the
+    // delayed save of Plasmoid.configuration.
+    KConfigSkeletonItem *shownItem = config->findItemByName(SHOWN_ITEMS_KEY);
+    KConfigSkeletonItem *hiddenItem = config->findItemByName(HIDDEN_ITEMS_KEY);
+    if (!shownItem || !hiddenItem) {
+        return;
+    }
+    updatingConfigValue = true;
+    shownItem->setProperty(shown);
+    hiddenItem->setProperty(hidden);
+    config->save();
+    config->read();
+    updatingConfigValue = false;
+
+    Q_EMIT configurationChanged();
+}
+
 void SystemTraySettings::loadConfig()
 {
     if (!config) {

@@ -662,6 +662,13 @@ void SystemTray::scroll(const QString &service, int delta, const QString &direct
     source->scroll(delta, direction);
 }
 
+void SystemTray::setItemPlacement(const QString &itemId, const QString &placement)
+{
+    if (m_settings) {
+        m_settings->setItemPlacement(itemId, placement);
+    }
+}
+
 K_PLUGIN_CLASS_WITH_JSON(SystemTray, "metadata.json")
 
 #include "systemtray.moc"

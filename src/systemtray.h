@@ -78,6 +78,12 @@ public:
 
     Q_INVOKABLE void scroll(const QString &service, int delta, const QString &direction);
 
+    /**
+     * Icon Drawer: places an item in the panel ("panel"), in the drawer
+     * ("drawer") or lets the item decide ("auto")
+     */
+    Q_INVOKABLE void setItemPlacement(const QString &itemId, const QString &placement);
+
 private Q_SLOTS:
     // synchronizes with configuration and deletes not allowed applets
     void onEnabledAppletsChanged();

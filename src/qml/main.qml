@@ -45,6 +45,14 @@ ContainmentItem {
     property bool draggedFromDrawer: false
     readonly property bool canMoveItems: !Plasmoid.configuration.showAllItems
 
+    // The drag took the focus away from the open drawer: give it back, so a
+    // click elsewhere still closes the drawer.
+    onDraggedItemIdChanged: {
+        if (draggedItemId === "" && dialog.visible) {
+            dialog.requestActivate();
+        }
+    }
+
     function placementOf(itemId: string): string {
         if (Plasmoid.configuration.shownItems.indexOf(itemId) !== -1) {
             return "panel";
@@ -59,15 +67,9 @@ ContainmentItem {
         if (!itemId || !canMoveItems) {
             return;
         }
-        const shownItems = Array.from(Plasmoid.configuration.shownItems).filter(id => id !== itemId);
-        const hiddenItems = Array.from(Plasmoid.configuration.hiddenItems).filter(id => id !== itemId);
-        if (placement === "panel") {
-            shownItems.push(itemId);
-        } else if (placement === "drawer") {
-            hiddenItems.push(itemId);
-        }
-        Plasmoid.configuration.shownItems = shownItems;
-        Plasmoid.configuration.hiddenItems = hiddenItems;
+        // Written from C++ so the tray models update immediately; writing
+        // Plasmoid.configuration reaches them only about a second later.
+        Plasmoid.setItemPlacement(itemId, placement);
     }
 
     Component.onCompleted: {
@@ -357,7 +359,9 @@ ContainmentItem {
                 : PlasmaCore.AppletPopup.AtScreenEdges | PlasmaCore.AppletPopup.AtPanelEdges
 
 
-            hideOnWindowDeactivate: !Plasmoid.configuration.pin
+            // Icon Drawer: on Wayland a drag deactivates the popup; hiding it
+            // then would destroy the dragged drawer item and cancel the drag.
+            hideOnWindowDeactivate: !Plasmoid.configuration.pin && root.draggedItemId === ""
             visible: systemTrayState.expanded
             appletInterface: root
 

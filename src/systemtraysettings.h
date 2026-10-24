@@ -39,6 +39,9 @@ public:
 
     void cleanupPlugin(const QString &pluginId);
 
+    // Icon Drawer: "panel", "drawer" or "auto"
+    void setItemPlacement(const QString &itemId, const QString &placement);
+
 Q_SIGNALS:
     void configurationChanged();
     void enabledPluginsChanged(const QStringList &enabledPlugins, const QStringList &disabledPlugins);
