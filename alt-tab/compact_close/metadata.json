@@ -1,0 +1,21 @@
+{
+    "KPackageStructure": "KWin/WindowSwitcher",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "mgraesslin@kde.org",
+                "Name": "Martin Gräßlin"
+            },
+            {
+                "Name": "Patrick Innecco"
+            }
+        ],
+        "Description": "The Compact window switcher with a close button and the Delete key to close windows",
+        "Description[pt_BR]": "O seletor de janelas Compacto com botão de fechar e a tecla Delete para fechar janelas",
+        "Icon": "preferences-system-windows-switcher-compact",
+        "Id": "compact_close",
+        "License": "GPL",
+        "Name": "Compact with Close",
+        "Name[pt_BR]": "Compacto com fechar"
+    }
+}
