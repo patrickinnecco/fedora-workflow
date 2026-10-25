@@ -30,6 +30,10 @@
         <label>If true, the drawer only lists application icons: system tray widgets (plasmoids) stored in the drawer are not shown there.</label>
         <default>false</default>
     </entry>
+    <entry name="monochromeAppIcons" type="bool">
+        <label>If true, application icons are drawn as single-color glyphs in the theme's text color, matching the symbolic system icons.</label>
+        <default>false</default>
+    </entry>
     <entry name="knownItems" type="StringList" hidden="true">
       <default></default>
     </entry>

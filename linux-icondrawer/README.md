@@ -34,6 +34,13 @@ contexto, atalhos e a página de configuração.
   Os itens escondidos continuam carregados e continuam listados no
   *Organize Drawer*, de onde podem voltar para o painel. Itens do sistema que
   estão no painel não mudam.
+- **Ícones de apps em uma cor:** a opção *App icons: Single color, like the
+  system icons*, na página de configuração, desenha os ícones dos apps como
+  glifos de uma cor só, na cor do texto do tema, como os ícones do sistema.
+  Cada ícone é separado em dois tons (limiar de Otsu sobre a luminância): o
+  tom de maior área vira o glifo e o outro é vazado, o que preserva detalhes
+  como o ▶ do Spotifast ou o "qb" do qBittorrent. Ícones de um tom só viram
+  silhueta. Vale para o painel e para a gaveta e acompanha a troca de tema.
 
 O arrasto e o gerenciador gravam apenas as mesmas chaves que a configuração
 nativa usa (`shownItems` e `hiddenItems`). Nenhum item é habilitado ou
@@ -121,6 +128,9 @@ sobre Xvfb, com mouse simulado por `xdotool`:
   5 reinícios do plasmashell com a opção ligada, o botão continuou marcado e a
   seta apareceu. Fechando o app, a seta some; abrindo de novo com o filtro
   ligado, ele volta à gaveta.
+- *Single color* (mesma sessão, com apps de teste usando os ícones reais do
+  Claude, Spotifast, qBittorrent e Steam): os quatro viram glifos na cor do
+  ícone de volume, escuros no Breeze claro e claros no Breeze escuro.
 
 Ainda não foi testado em um painel real do Plasma sobre Wayland, nem com dois
 monitores.

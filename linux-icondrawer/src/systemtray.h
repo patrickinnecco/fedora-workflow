@@ -7,6 +7,8 @@
 #pragma once
 
 #include <QAbstractItemModel>
+#include <QColor>
+#include <QIcon>
 #include <QPointer>
 
 #include <KConfigWatcher>
@@ -89,6 +91,14 @@ public:
      */
     Q_INVOKABLE void setItemPlacement(const QString &itemId, const QString &placement);
 
+    /**
+     * Icon Drawer: turns an application icon (a QIcon or an icon name) into a
+     * single-color glyph in @p color, so it matches the symbolic system icons.
+     * The larger tone of the icon becomes the glyph and the smaller one is cut
+     * out, keeping details such as a play sign or letters.
+     */
+    Q_INVOKABLE QVariant monochromeIcon(const QVariant &icon, const QColor &color);
+
 private Q_SLOTS:
     // synchronizes with configuration and deletes not allowed applets
     void onEnabledAppletsChanged();
@@ -115,4 +125,6 @@ private:
     SortedSystemTrayModel *m_configSystemTrayModel = nullptr;
 
     QHash<QString /*plugin id*/, int /*config group*/> m_configGroupIds;
+
+    QHash<QString /*icon key and color*/, QIcon> m_monochromeIcons;
 };

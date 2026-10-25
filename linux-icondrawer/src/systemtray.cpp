@@ -4,6 +4,8 @@
     SPDX-License-Identifier: GPL-2.0-or-later
 */
 
+#include <algorithm>
+#include <array>
 #include <optional>
 
 #include "config-X11.h"
@@ -18,6 +20,8 @@
 #include "systemtraysettings.h"
 
 #include <QGuiApplication>
+#include <QIcon>
+#include <QImage>
 #include <QMenu>
 #include <QMetaMethod>
 #include <QMetaObject>
@@ -672,6 +676,110 @@ void SystemTray::setItemPlacement(const QString &itemId, const QString &placemen
 int SystemTray::systemItemRole() const
 {
     return static_cast<int>(SystemTrayModel::Role::IsSystemItem);
+}
+
+// Icon Drawer: two-tone glyph. An Otsu threshold splits the luminance of the
+// opaque pixels in two tones; the tone covering more area is the glyph body
+// and the other one is cut out. Icons with little contrast keep their whole
+// silhouette.
+static QImage monochromeGlyph(const QImage &source, const QColor &color)
+{
+    const QImage image = source.convertToFormat(QImage::Format_ARGB32);
+    const int pixelCount = image.width() * image.height();
+    const auto *pixels = reinterpret_cast<const QRgb *>(image.constBits());
+
+    constexpr int bins = 64;
+    std::array<double, bins> histogram{};
+    QList<float> luminance(pixelCount);
+    for (int i = 0; i < pixelCount; ++i) {
+        const QRgb pixel = pixels[i];
+        luminance[i] = (0.2126f * qRed(pixel) + 0.7152f * qGreen(pixel) + 0.0722f * qBlue(pixel)) / 255.0f;
+        if (qAlpha(pixel) > 127) {
+            histogram[std::min(bins - 1, int(luminance[i] * bins))] += qAlpha(pixel) / 255.0;
+        }
+    }
+
+    double total = 0;
+    for (double weight : histogram) {
+        total += weight;
+    }
+    double bestVariance = -1;
+    int threshold = bins / 2;
+    double lowMean = 0, highMean = 0, lowWeight = 1, highWeight = 0;
+    for (int split = 1; split < bins; ++split) {
+        double weight0 = 0, sum0 = 0;
+        for (int bin = 0; bin < split; ++bin) {
+            weight0 += histogram[bin];
+            sum0 += bin * histogram[bin];
+        }
+        const double weight1 = total - weight0;
+        if (weight0 <= 0 || weight1 <= 0) {
+            continue;
+        }
+        double sum1 = 0;
+        for (int bin = split; bin < bins; ++bin) {
+            sum1 += bin * histogram[bin];
+        }
+        const double mean0 = sum0 / weight0;
+        const double mean1 = sum1 / weight1;
+        const double variance = weight0 * weight1 * (mean0 - mean1) * (mean0 - mean1);
+        if (variance > bestVariance) {
+            bestVariance = variance;
+            threshold = split;
+            lowMean = mean0;
+            highMean = mean1;
+            lowWeight = weight0;
+            highWeight = weight1;
+        }
+    }
+
+    const float cut = float(threshold) / bins;
+    const bool twoTones = bestVariance > 0 && (highMean - lowMean) / bins >= 0.15;
+    const bool darkBody = lowWeight >= highWeight;
+    constexpr float softness = 0.06f; // anti-aliases the cut-out edges
+
+    QImage glyph(image.size(), QImage::Format_ARGB32);
+    auto *out = reinterpret_cast<QRgb *>(glyph.bits());
+    for (int i = 0; i < pixelCount; ++i) {
+        float keep = 1.0f;
+        if (twoTones) {
+            const float bodySide = darkBody ? cut - luminance[i] : luminance[i] - cut;
+            keep = std::clamp(0.5f + bodySide / (2 * softness), 0.0f, 1.0f);
+        }
+        out[i] = qRgba(color.red(), color.green(), color.blue(), qRound(qAlpha(pixels[i]) * keep));
+    }
+    glyph.setDevicePixelRatio(source.devicePixelRatio());
+    return glyph;
+}
+
+QVariant SystemTray::monochromeIcon(const QVariant &icon, const QColor &color)
+{
+    QIcon source;
+    QString key;
+    if (icon.metaType() == QMetaType::fromType<QIcon>()) {
+        source = icon.value<QIcon>();
+        key = QString::number(source.cacheKey());
+    } else if (icon.metaType() == QMetaType::fromType<QString>() && !icon.toString().isEmpty()) {
+        source = QIcon::fromTheme(icon.toString());
+        key = icon.toString();
+    }
+    if (source.isNull()) {
+        return icon;
+    }
+
+    key += color.name(QColor::HexArgb);
+    auto cached = m_monochromeIcons.constFind(key);
+    if (cached != m_monochromeIcons.constEnd()) {
+        return QVariant::fromValue(*cached);
+    }
+
+    const QImage glyph = monochromeGlyph(source.pixmap(QSize(64, 64)).toImage(), color);
+    const QIcon result(QPixmap::fromImage(glyph));
+    if (m_monochromeIcons.size() > 256) { // icons that animate keep adding entries
+        m_monochromeIcons.clear();
+    }
+    m_monochromeIcons.insert(key, result);
+    return QVariant::fromValue(result);
 }
 
 K_PLUGIN_CLASS_WITH_JSON(SystemTray, "metadata.json")

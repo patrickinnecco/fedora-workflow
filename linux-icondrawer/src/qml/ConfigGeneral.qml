@@ -34,6 +34,7 @@ KCMUtils.ScrollViewKCM {
     property bool cfg_reverseIconOrder
     property bool cfg_showAllItems
     property bool cfg_hideSystemItemsInDrawer
+    property bool cfg_monochromeAppIcons
     property list<string> cfg_shownItems: []
     property list<string> cfg_hiddenItems: []
     property list<string> cfg_extraItems: []
@@ -308,6 +309,13 @@ KCMUtils.ScrollViewKCM {
                 text: i18nc("@option:check", "Show only apps (hide system items)")
                 checked: iconsPage.cfg_hideSystemItemsInDrawer
                 onToggled: iconsPage.cfg_hideSystemItemsInDrawer = checked
+            }
+
+            QQC2.CheckBox {
+                Kirigami.FormData.label: i18nc("@label:checkbox", "App icons:")
+                text: i18nc("@option:check", "Single color, like the system icons")
+                checked: iconsPage.cfg_monochromeAppIcons
+                onToggled: iconsPage.cfg_monochromeAppIcons = checked
             }
 
             QQC2.Label {

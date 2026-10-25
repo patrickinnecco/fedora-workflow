@@ -27,7 +27,7 @@ AbstractItem {
         parent: taskIcon.iconContainer
         anchors.fill: iconItem.parent
 
-        source: {
+        readonly property var appIcon: {
             if (taskIcon.model?.status === PlasmaCore.Types.NeedsAttentionStatus) {
                 if (taskIcon.model?.AttentionIcon) {
                     return taskIcon.model.AttentionIcon
@@ -38,6 +38,8 @@ AbstractItem {
             }
             return taskIcon.model?.Icon || taskIcon.model?.IconName || ""
         }
+        // Icon Drawer: optionally drawn in the style of the system icons.
+        source: Plasmoid.configuration.monochromeAppIcons ? Plasmoid.monochromeIcon(appIcon, Kirigami.Theme.textColor) : appIcon
         active: taskIcon.containsMouse
     }
 

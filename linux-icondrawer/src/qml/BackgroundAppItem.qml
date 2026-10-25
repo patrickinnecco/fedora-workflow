@@ -29,7 +29,8 @@ AbstractItem {
         parent: taskIcon.iconContainer
         anchors.fill: iconItem.parent
 
-        source: taskIcon.model.icon
+        // Icon Drawer: optionally drawn in the style of the system icons.
+        source: Plasmoid.configuration.monochromeAppIcons ? Plasmoid.monochromeIcon(taskIcon.model.icon, Kirigami.Theme.textColor) : taskIcon.model.icon
         active: taskIcon.containsMouse
     }
 
